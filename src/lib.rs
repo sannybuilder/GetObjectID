@@ -36,7 +36,7 @@ where
             continue;
         };
         for (section_name, lines) in ide {
-            if ["txdp", "path"].contains(&section_name.as_str()) {
+            if ["txdp", "path", "2dfx"].contains(&section_name.as_str()) {
                 continue;
             }
             for line in lines {
@@ -83,10 +83,10 @@ pub extern "C" fn GetObjectID(objname: *const c_char, path: *const c_char) -> i3
 }
 
 #[no_mangle]
-pub extern "C" fn GetObjectName(id: i32, path: *const c_char, buf: *mut c_char) {
+pub extern "C" fn GetObjectName(id: i32, path: *const c_char, buf: *mut c_char) -> i32 {
     let Some(game_dir) = get_path(path) else {
         log::error!("Invalid input path");
-        return;
+        return -1;
     };
     log::debug!("Searching the model with id {id} in {}", game_dir.display());
     match walk_game_dir(game_dir, |id2, name| -> Option<CString> {
@@ -97,9 +97,11 @@ pub extern "C" fn GetObjectName(id: i32, path: *const c_char, buf: *mut c_char) 
     }) {
         Some(s) => unsafe {
             libc::strncpy(buf, s.as_ptr(), 32);
+            return 1;
         },
         None => {
             log::error!("Failed to find the model with id {}", id);
+            return -1;
         }
     }
 }
