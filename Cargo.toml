@@ -1,0 +1,23 @@
+[package]
+name = "get-object-id"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+name = "GetObjectID"
+
+[dependencies]
+globwalk = "0.8.1"
+gta-ide-parser = "0.0.4"
+log = { version = "0.4.14", features = ["max_level_debug", "release_max_level_off"] }
+simplelog = "0.11.2"
+ctor = "0.1.20"
+libc = "0.2.79"
+
+[profile.release]
+codegen-units = 1 # Reduce number of codegen units to increase optimizations.
+lto = true # Enable Link Time Optimization
+opt-level = 'z' # Optimize for size.
+panic = 'abort' # Abort on panic
+strip = 'symbols' 
